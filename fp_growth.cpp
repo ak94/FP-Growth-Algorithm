@@ -17,30 +17,31 @@
  * contains freq item in descending order
  */
  vector<pair<int,bool> > order_of_freq_item_id;
- node *root;
+ vector<node *> root;
 
 /**
  * scan transaction dataset.
  * Collect F, frequent_items and their support count.
  * sort F in support count descending order as L.
  */
-void scan_dataset();
+ void scan_dataset();
 /**
  * generate order list of frequent data items in desc order
  * @param map_freq_set contains frequent data-item and their count
  */
-void form_desc_order_list_of_freq_item(MAPI map_freq_set);
+ void form_desc_order_list_of_freq_item(MAPI map_freq_set);
 /**
  * Tree Formation
  * @param head            itemid to be inserted
  * @param list_of_items   items from transaction in desc order 
  * @param index_to_insert item currently to be inserted from list_of_items
  */
-void insert(node *head,vector<int> list_of_items,int index_to_insert);
+ void insert(vector<node *>& head,vector<int> list_of_items,int index_to_insert,node *prt);
 /**
  * scan database and insert items in tree
  */
-void tree_creation();
+ void tree_creation();
+ void output_tree();
 
 
 
@@ -59,10 +60,9 @@ void tree_creation();
 
 
 
-
-int main(int argc, char const *argv[])
+ int main(int argc, char const *argv[])
  {
- 	root=new node;
+ 	root.clear();
  	scan_dataset();
  	tree_creation();
 
@@ -150,15 +150,43 @@ void form_desc_order_list_of_freq_item(MAPI map_freq_set)
 		}
 	}
 
-	/*for (int i = 0; i < order_of_freq_item_id.size(); ++i)
-	{
-		cout<<order_of_freq_item_id[i].first<<" "<<order_of_freq_item_id[i].second<<"\n";
-	}*/
+	
 }
 
-void insert(node *head,vector<int> list_of_items,int index_to_insert)
+void insert(vector<node *>& head,vector<int> list_of_items,int index_to_insert,node *prt)
 {
-
+	bool item_found=false;
+	if(head.size()>0)
+	{
+		for (int jj = 0; jj < head.size(); ++jj)
+		{
+			if(head[jj]->item == list_of_items[index_to_insert])
+			{
+				item_found=true;
+				head[jj]->count++;
+				if(index_to_insert+1 < list_of_items.size())
+				{
+					insert(head[jj]->child,list_of_items,index_to_insert+1,head[jj]);
+				}
+			}
+		}
+	}
+	if(!item_found)
+	{
+		node *new_node;
+		new_node=new node;
+		new_node->item=list_of_items[index_to_insert];
+		new_node->count=1;
+		new_node->child.clear();
+		new_node->parent=prt;
+		
+		if(index_to_insert+1 < list_of_items.size())
+		{
+			insert(new_node->child,list_of_items,index_to_insert+1,new_node);
+		}
+		head.push_back(new_node);
+	}
+	
 }
 
 void tree_creation()
@@ -170,36 +198,56 @@ void tree_creation()
 	items_to_be_inserted.clear();
 	while(fin>>item_id)
 	{
-		if(item_id==-1)
-		{
+			if(item_id==-1)
+			{
 			/**
 			 * check all those who are true in order_of_freq_list
 			 * then add them to items_to_be_inserted
 			 * then insert items_to_be_inserted in tree
 			 */
-			for(int ii=0;ii<order_of_freq_item_id.size();ii++)
+				 for(int ii=0;ii<order_of_freq_item_id.size();ii++)
+				 {
+				 	if(order_of_freq_item_id[ii].second==true)
+				 		items_to_be_inserted.push_back(order_of_freq_item_id[ii].first);
+				 }
+
+			 insert(root,items_to_be_inserted,0,NULL);
+
+			 items_to_be_inserted.clear();
+
+			 for(int ii=0;ii<order_of_freq_item_id.size();ii++)
+			 	order_of_freq_item_id[ii].second=false;
+
+			}else
 			{
-				if(order_of_freq_item_id[ii].second==true)
-					items_to_be_inserted.push_back(order_of_freq_item_id[ii].first);
-			}
-
-			insert(root,items_to_be_inserted,0);
-
-			items_to_be_inserted.clear();
-
-			for(int ii=0;ii<order_of_freq_item_id.size();ii++)
-				order_of_freq_item_id[ii].second=false;
-
-		}else
-		{
-			for(int ii=0;ii<order_of_freq_item_id.size();ii++)
-			{
-				if(order_of_freq_item_id[ii].first == item_id)
+				for(int ii=0;ii<order_of_freq_item_id.size();ii++)
 				{
-					order_of_freq_item_id[ii].second=true;
-					break;
+					if(order_of_freq_item_id[ii].first == item_id)
+					{
+						order_of_freq_item_id[ii].second=true;
+						break;
+					}
 				}
 			}
-		}
 	}
+
+	//output_tree();
 }
+
+/*void output_tree()
+{
+	/**
+	 * level order traversal
+	 * 
+	 *
+	
+	for (int i = 0; i < root.size(); ++i)
+	{
+		cout<<root[i]->item<<" "<<root[i]->count<<",";
+	}
+	cout<<"\n";
+	root = root[0]->child;
+	for(int i=0;i<root.size();i++)
+		cout<<root[i]->item<<" "<<root[i]->count<<",";
+}*/
+
