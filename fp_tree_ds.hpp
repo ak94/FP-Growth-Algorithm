@@ -7,6 +7,10 @@ struct node
 	int count; // item set count
 	std::vector<node *> child; // its children node
 	node *parent; // ptr to parent
+	node()
+	{
+		parent=NULL;
+	}
 };
 
 #endif
