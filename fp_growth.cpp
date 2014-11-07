@@ -17,7 +17,7 @@
  * contains freq item in descending order
  */
  vector<pair<int,bool> > order_of_freq_item_id;
-
+ node *root;
 
 /**
  * scan transaction dataset.
@@ -30,11 +30,45 @@ void scan_dataset();
  * @param map_freq_set contains frequent data-item and their count
  */
 void form_desc_order_list_of_freq_item(MAPI map_freq_set);
+/**
+ * Tree Formation
+ * @param head            itemid to be inserted
+ * @param list_of_items   items from transaction in desc order 
+ * @param index_to_insert item currently to be inserted from list_of_items
+ */
+void insert(node *head,vector<int> list_of_items,int index_to_insert);
+/**
+ * scan database and insert items in tree
+ */
+void tree_creation();
 
- int main(int argc, char const *argv[])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+int main(int argc, char const *argv[])
  {
-
+ 	root=new node;
  	scan_dataset();
+ 	tree_creation();
+
+
+
+
  	return 0;
  }
 
@@ -72,7 +106,7 @@ void form_desc_order_list_of_freq_item(MAPI map_freq_set);
 				map_freq_set[item_id]=1;
 		}
 	}
-
+	fin.close();
 
 	MAPI map_temp;
 	map_temp.clear();
@@ -120,4 +154,52 @@ void form_desc_order_list_of_freq_item(MAPI map_freq_set)
 	{
 		cout<<order_of_freq_item_id[i].first<<" "<<order_of_freq_item_id[i].second<<"\n";
 	}*/
+}
+
+void insert(node *head,vector<int> list_of_items,int index_to_insert)
+{
+
+}
+
+void tree_creation()
+{
+	ifstream fin;
+	fin.open("input.txt");
+	int item_id;
+	std::vector<int> items_to_be_inserted;
+	items_to_be_inserted.clear();
+	while(fin>>item_id)
+	{
+		if(item_id==-1)
+		{
+			/**
+			 * check all those who are true in order_of_freq_list
+			 * then add them to items_to_be_inserted
+			 * then insert items_to_be_inserted in tree
+			 */
+			for(int ii=0;ii<order_of_freq_item_id.size();ii++)
+			{
+				if(order_of_freq_item_id[ii].second==true)
+					items_to_be_inserted.push_back(order_of_freq_item_id[ii].first);
+			}
+
+			insert(root,items_to_be_inserted,0);
+
+			items_to_be_inserted.clear();
+
+			for(int ii=0;ii<order_of_freq_item_id.size();ii++)
+				order_of_freq_item_id[ii].second=false;
+
+		}else
+		{
+			for(int ii=0;ii<order_of_freq_item_id.size();ii++)
+			{
+				if(order_of_freq_item_id[ii].first == item_id)
+				{
+					order_of_freq_item_id[ii].second=true;
+					break;
+				}
+			}
+		}
+	}
 }
