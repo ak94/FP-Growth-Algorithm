@@ -198,18 +198,18 @@ void tree_creation()
 	items_to_be_inserted.clear();
 	while(fin>>item_id)
 	{
-			if(item_id==-1)
-			{
+		if(item_id==-1)
+		{
 			/**
 			 * check all those who are true in order_of_freq_list
 			 * then add them to items_to_be_inserted
 			 * then insert items_to_be_inserted in tree
 			 */
-				 for(int ii=0;ii<order_of_freq_item_id.size();ii++)
-				 {
-				 	if(order_of_freq_item_id[ii].second==true)
-				 		items_to_be_inserted.push_back(order_of_freq_item_id[ii].first);
-				 }
+			 for(int ii=0;ii<order_of_freq_item_id.size();ii++)
+			 {
+			 	if(order_of_freq_item_id[ii].second==true)
+			 		items_to_be_inserted.push_back(order_of_freq_item_id[ii].first);
+			 }
 
 			 insert(root,items_to_be_inserted,0,NULL);
 
@@ -229,25 +229,59 @@ void tree_creation()
 					}
 				}
 			}
+		}
+
+	output_tree();
 	}
 
-	//output_tree();
-}
-
-/*void output_tree()
-{
+	void output_tree()
+	{
 	/**
 	 * level order traversal
 	 * 
-	 *
-	
-	for (int i = 0; i < root.size(); ++i)
-	{
-		cout<<root[i]->item<<" "<<root[i]->count<<",";
+	 */
+	 queue<vector<node *> > q;
+	 q=queue<vector<node *> >();
+	 vector<node *> vec_empty;
+	 vector<node *> temp;
+	 vec_empty.clear();
+	 temp.clear();
+	 q.push(root);
+	 q.push(vec_empty);
+	 while(!q.empty())
+	 {
+	 	temp=q.front();
+	 	q.pop();
+	 	if(temp.size()>0)
+	 	{
+	 		q.push(vec_empty);
+	 		if(temp[0]->parent)
+	 			cout<<"parent "<<temp[0]->parent->item<<" "<<temp[0]->parent->count<<"\n";
+	 		else
+	 			cout<<"NULL\n";
+	 		for (int i = 0; i < temp.size(); ++i)
+	 		{
+	 			cout<<temp[i]->item<<" "<<temp[i]->count<<",";
+	 			if(temp[i]->child.size()>0)
+	 			q.push(temp[i]->child);
+	 		}
+
+	 	}
+
+	 	temp = q.front();
+	 	q.pop();
+	 	if(temp.size()==0)
+	 	{
+	 		cout<<"\n";
+	 		if(q.size()==0)
+	 			break;
+	 		else
+	 			q.push(temp);
+	 	}else
+	 		q.push(temp);
+	 }
+
+	 
+	 
 	}
-	cout<<"\n";
-	root = root[0]->child;
-	for(int i=0;i<root.size();i++)
-		cout<<root[i]->item<<" "<<root[i]->count<<",";
-}*/
 
