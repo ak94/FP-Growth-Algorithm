@@ -18,7 +18,11 @@
  */
  vector<pair<int,bool> > order_of_freq_item_id;
  vector<node *> root;
-
+ /**
+  * header Table
+  * int : item , vector<node *> : unique nodes with same item val
+  */
+ vector<pair<int,vector<node* > > > header_table;
 /**
  * scan transaction dataset.
  * Collect F, frequent_items and their support count.
@@ -41,11 +45,14 @@
  * scan database and insert items in tree
  */
  void tree_creation();
+ /**
+  * Level order traversal of tree
+  */
  void output_tree();
-
-
-
-
+ /**
+  * copy order_of_freq_item_id to header_table(with vector.clear())
+  */
+ void initialise_header_table_with_item();
 
 
 
@@ -122,6 +129,7 @@
 	map_freq_set.clear();
 	map_freq_set=map_temp;
 	form_desc_order_list_of_freq_item(map_freq_set);
+	initialise_header_table_with_item();
 
 }
 
@@ -201,7 +209,7 @@ void tree_creation()
 		if(item_id==-1)
 		{
 			/**
-			 * check all those who are true in order_of_freq_list
+			 * check all those who are true in order_of_freq_item_id
 			 * then add them to items_to_be_inserted
 			 * then insert items_to_be_inserted in tree
 			 */
@@ -218,8 +226,8 @@ void tree_creation()
 			 for(int ii=0;ii<order_of_freq_item_id.size();ii++)
 			 	order_of_freq_item_id[ii].second=false;
 
-			}else
-			{
+		}else
+		{
 				for(int ii=0;ii<order_of_freq_item_id.size();ii++)
 				{
 					if(order_of_freq_item_id[ii].first == item_id)
@@ -228,14 +236,14 @@ void tree_creation()
 						break;
 					}
 				}
-			}
 		}
-
-	output_tree();
 	}
 
-	void output_tree()
-	{
+	output_tree();
+}
+
+void output_tree()
+{
 	/**
 	 * level order traversal
 	 * 
@@ -283,5 +291,17 @@ void tree_creation()
 
 	 
 	 
+}
+
+void initialise_header_table_with_item()
+{
+	header_table.clear();
+	vector<node *> temp;
+	temp.clear();
+
+	for(int i = 0; i < order_of_freq_item_id.size(); ++i)
+	{
+		header_table.push_back(make_pair(order_of_freq_item_id[i].first,temp));
 	}
 
+}
